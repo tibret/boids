@@ -42,6 +42,9 @@ func main() {
 		Offset:   rl.Vector2{X: screenSize / 2, Y: screenSize / 2},
 	}
 
+	// invert := rl.LoadShader("shaders/pass.vs", "shaders/invert.fs")
+	chromaticAbberation := rl.LoadShader("shaders/pass.vs", "shaders/chromaticabberation.fs")
+
 	for !rl.WindowShouldClose() {
 		rl.BeginTextureMode(target)
 		rl.BeginDrawing()
@@ -128,13 +131,15 @@ func main() {
 		rl.EndDrawing()
 		rl.EndTextureMode()
 
+		rl.BeginShaderMode(chromaticAbberation)
 		rl.DrawTextureRec(target.Texture, rl.NewRectangle(0, 0, float32(target.Texture.Width), -1*float32(target.Texture.Height)), rl.NewVector2(0, 0), rl.White)
+		rl.EndShaderMode()
 
 		// draw text on top of shaded texture
-		rl.DrawText(fmt.Sprintf("Cohesion: %f", cohesionFactor), 0-offsetX, 0-offsetY, 16, rl.Blue)
-		rl.DrawText(fmt.Sprintf("Alignment: %f", alignmentFactor), 0-offsetX, 20-offsetY, 16, rl.Blue)
-		rl.DrawText(fmt.Sprintf("Avoidance: %f", avoidanceFactor), 0-offsetX, 40-offsetY, 16, rl.Blue)
-		rl.DrawText(fmt.Sprintf("FOV: %d", fov), 0-offsetX, 60-offsetY, 16, rl.Blue)
+		rl.DrawText(fmt.Sprintf("Cohesion: %f", cohesionFactor), 10-offsetX, 10-offsetY, 16, rl.Blue)
+		rl.DrawText(fmt.Sprintf("Alignment: %f", alignmentFactor), 10-offsetX, 30-offsetY, 16, rl.Blue)
+		rl.DrawText(fmt.Sprintf("Avoidance: %f", avoidanceFactor), 10-offsetX, 50-offsetY, 16, rl.Blue)
+		rl.DrawText(fmt.Sprintf("FOV: %d", fov), 10-offsetX, 70-offsetY, 16, rl.Blue)
 	}
 
 	rl.CloseWindow()
@@ -216,7 +221,7 @@ func DrawBoids(boids *[]*Boid, cohesionFactor float32, alignmentFactor float32, 
 	const boid_size float64 = 15
 	for _, boid := range *boids {
 		tA, tB, tC := BoidPoints(boid)
-		color := rl.Red
+		color := rl.White
 		if boid.Debug {
 			color = rl.Blue
 			var rotationDeg = boid.Rotation * 180 / math.Pi
